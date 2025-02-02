@@ -36,3 +36,12 @@ A **JWT (JSON Web Token) authorization server** is crucial when you need to mana
    - When combined with protocols like **OAuth2**, JWT can be used for delegating authentication and authorization. For example, a user can authenticate using their Google or Facebook account, and the authorization server issues a JWT representing the user’s identity.
 
 In essence, the JWT authorization server provides the ability to handle **secure authentication, manage roles and permissions**, and **scale easily** across multiple services, all while maintaining a **stateless** architecture that simplifies operations. It’s highly useful in modern, distributed, and microservices-based applications.
+
+## How to run this Jar ##
+ Simply run the java -jar "Jar name" which you have built
+
+## chnges to be done in upcoming editions ##
+1. Run it with OpenJDK
+2. Run it with Docker
+3. Enable Basic Logging for the JWT Resource server for better monitoring
+4. Use this server authentication and authorization of other RESTApis present in repo. This can be handled via EUREKA handler.
