@@ -48,7 +48,7 @@ jobs:
         image: karthikpnrao/privaterepo
         tags: v1, latest
         registry: docker.com
-        dockerfile: dockerfile.ci
+        dockerfile: dockerfile
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }} 
 
