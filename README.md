@@ -41,7 +41,8 @@ In essence, the JWT authorization server provides the ability to handle **secure
  Simply run the java -jar "Jar name" which you have built
 
 ## chnges to be done in upcoming editions ##
-1. Run it with OpenJDK
-2. Run it with Docker
-3. Enable Basic Logging for the JWT Resource server for better monitoring
-4. Use this server authentication and authorization of other RESTApis present in repo. This can be handled via EUREKA handler.
+1. Run it with OpenJDK :white_check_mark:
+2. Run it with Docker :white_check_mark:
+3. Enable Basic Logging for the JWT Resource server for better monitoring :white_check_mark:
+4. Use this server authentication and authorization of other RESTApis present in repo. This can be handled via EUREKA handler. :white_check_mark:
+5. Build and run using Docker actions. :white_check_mark:
