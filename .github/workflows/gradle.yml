@@ -14,6 +14,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }} 
     permissions:
       contents: read
 
@@ -37,7 +39,8 @@ jobs:
       run: ./gradlew build -x test
 
     - name: Get version number from Gradle
-      run: VERSION= $(./gradlew properties --no-daemon --console=plain -q | grep "^version:" | awk '{printf $2}') >> $GITHUB.ENV
+      uses: thecodemonkey/action-get-gradle-version@master     
+      id: version                                                     
 
     - name: Get Artifact
       uses: actions/upload-artifact@v4
@@ -55,10 +58,10 @@ jobs:
       run: docker build -t  authserver .
 
     - name: tag it with private repo
-      run: docker tag authserver:latest ${{ secrets.DOCKER_USERNAME }}/privaterepo:${{ env.VERSION }}
+      run: docker tag authserver:latest ${{ secrets.DOCKER_USERNAME }}/privaterepo:${{ steps.version.outputs.version }}
 
     - name: Push Docker image
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/privaterepo:${{ env.VERSION }}
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/privaterepo:${{ steps.version.outputs.version }}
     # - name: Publish to Registry
     #   uses: elgohr/Publish-Docker-Github-Action@v5
     #   with:
