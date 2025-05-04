@@ -36,6 +36,9 @@ jobs:
     - name: Build with Gradle Wrapper
       run: ./gradlew build -x test
 
+    - name: Get version number from Gradle
+      run: VERSION= $(./gradlew properties --no-daemon --console=plain -q) | grep "^version:" | awk '{printf $2}' >> $GITHUB.ENV
+
     - name: Get Artifact
       uses: actions/upload-artifact@v4
       with:
@@ -52,10 +55,10 @@ jobs:
       run: docker build -t  authserver .
 
     - name: tag it with private repo
-      run: docker tag authserver:latest ${{ secrets.DOCKER_USERNAME }}/privaterepo:latest
+      run: docker tag authserver:latest ${{ secrets.DOCKER_USERNAME }}/privaterepo:${{ env.VERSION }}
 
     - name: Push Docker image
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/privaterepo:latest
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/privaterepo:${{ env.VERSION }}
     # - name: Publish to Registry
     #   uses: elgohr/Publish-Docker-Github-Action@v5
     #   with:
