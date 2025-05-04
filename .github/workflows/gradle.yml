@@ -42,16 +42,17 @@ jobs:
         name: my-artifact
         path: build/libs/AuthServer*
 
-    - uses: mr-smithers-excellent/docker-build-push@v6
-      name: Build & push Docker image
-      with:
-        image: karthikpnrao/privaterepo
-        tags: v1, latest
-        registry: docker.com
-        dockerfile: dockerfile
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }} 
+    - name: Login to Docker
+      run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
+    - name: Build docker image from run command
+      run: docker build -t  authserver .
+
+    - name: tag it with private repo
+      run: docker tag authserver:latest ${{ secrets.DOCKER_USERNAME }}/privaterepo:latest
+
+    - name: Push Docker image
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/privaterepo:latest
     # - name: Publish to Registry
     #   uses: elgohr/Publish-Docker-Github-Action@v5
     #   with:
