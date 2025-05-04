@@ -42,15 +42,13 @@ jobs:
         name: my-artifact
         path: build/libs/AuthServer*
 
-    - name: Build & push Docker image
-      uses: mr-smithers-excellent/docker-build-push@v6.4
+    - name: Publish to Registry
+      uses: elgohr/Publish-Docker-Github-Action@v5
       with:
-        image: karthikpnrao/privaterepo
-        tags: latest
-        registry: docker.com
+        name: karthikpnrao/privaterepo
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-
+        dockerfile: dockerfile
     # - name: Build and push
     #   uses: docker/build-push-action@v6
     #   with:
