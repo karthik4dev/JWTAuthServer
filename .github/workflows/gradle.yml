@@ -46,9 +46,12 @@ jobs:
       uses: elgohr/Publish-Docker-Github-Action@v5
       with:
         name: karthikpnrao/privaterepo
+        registry: docker.io
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         dockerfile: dockerfile
+        cache: ${{ github.event_name != 'schedule' }}
+        tags: "latest,v1"
     # - name: Build and push
     #   uses: docker/build-push-action@v6
     #   with:
