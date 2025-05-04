@@ -37,7 +37,7 @@ jobs:
       run: ./gradlew build -x test
 
     - name: Get version number from Gradle
-      run: VERSION= $(./gradlew properties --no-daemon --console=plain -q) | grep "^version:" | awk '{printf $2}' >> $GITHUB.ENV
+      run: VERSION= $(./gradlew properties --no-daemon --console=plain -q | grep "^version:" | awk '{printf $2}') >> $GITHUB.ENV
 
     - name: Get Artifact
       uses: actions/upload-artifact@v4
