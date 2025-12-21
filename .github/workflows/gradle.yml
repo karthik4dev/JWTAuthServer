@@ -60,10 +60,10 @@ jobs:
       run: docker build -t  authserver .
 
     - name: tag it with private repo
-      run: docker tag authserver:latest ${{ secrets.DOCKER_USERNAME }}/privaterepo:${{ steps.version.outputs.version }}
+      run: docker tag authserver:latest ${{ secrets.DOCKER_USERNAME }}/authenticationserver:${{ steps.version.outputs.version }}
 
     - name: Push Docker image
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/privaterepo:${{ steps.version.outputs.version }}
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/authenticationserver:${{ steps.version.outputs.version }}
 
   dependency-submission:
 
