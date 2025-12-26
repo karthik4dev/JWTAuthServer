@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import static com.karthikProjects.AuthServer.Configuration.ConfigClass.passwordEncoder;
+
 @Service
 public class UserService implements UserDetailsService {
 
@@ -23,5 +25,15 @@ public class UserService implements UserDetailsService {
                 .password(user.get().getPassword())
                 .roles(String.valueOf(user.get().getScopes()))
                 .build();
+    }
+
+    public void save(Users users) {
+        Users user = Users.builder()
+                .username(users.getUsername())
+                .mail(users.getMail())
+                .roles(users.getRoles())
+                .password(passwordEncoder().encode(users.getPassword()))
+                .build();
+        repository.save(user);
     }
 }
