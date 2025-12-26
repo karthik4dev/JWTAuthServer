@@ -1,7 +1,5 @@
 package com.karthikProjects.AuthServer.Configuration.UserService;
 
-
-import com.karthikProjects.AuthServer.Configuration.Scopes;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
@@ -35,16 +33,4 @@ public class Users {
 
     @NonNull
     private ArrayList<Scopes> roles;
-
-    public @NonNull String getUsername() {
-        return this.username;
-    }
-
-    public @NonNull String getPassword() {
-        return this.password;
-    }
-
-    public @NonNull List<Scopes> getScopes() {
-        return this.roles;
-    }
 }
