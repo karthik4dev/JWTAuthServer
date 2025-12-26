@@ -118,7 +118,7 @@ public class ConfigClass {
         RegisteredClient client1 = RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId("client1")
                 .clientName("Karthik P N")
-                .clientSecret("{noop}secret").scope(String.valueOf(Scopes.READ))
+                .clientSecret(passwordEncoder().encode("secret")).scope(String.valueOf(Scopes.READ))
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
