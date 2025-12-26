@@ -23,7 +23,7 @@ public class UserService implements UserDetailsService {
         if(user.isEmpty()){throw new UsernameNotFoundException("Given Username is not found in DB");}
         return User.builder().username(user.get().getUsername())
                 .password(user.get().getPassword())
-                .roles(String.valueOf(user.get().getScopes()))
+                .roles(String.valueOf(user.get().getRoles()))
                 .build();
     }
 
