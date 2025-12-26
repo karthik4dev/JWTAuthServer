@@ -89,9 +89,9 @@ public class ConfigClass {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        UserDetails userDetails = User.withDefaultPasswordEncoder()
+        UserDetails userDetails = User.builder()
                 .username("user")
-                .password("password")
+                .password("{noop}password")
                 .roles("USER")
                 .build();
 
@@ -103,7 +103,7 @@ public class ConfigClass {
         RegisteredClient client1 = RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId("client1")
                 .clientName("Karthik P N")
-                .clientSecret("{noop}secret").scope(String.valueOf(Scopes.READ))
+                .clientSecret("{noop}secret").scope("READ")
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
