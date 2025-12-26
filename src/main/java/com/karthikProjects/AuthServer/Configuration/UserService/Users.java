@@ -16,6 +16,7 @@ import java.util.List;
 @Table(name = "Users_for_authentication")
 @Getter
 @Setter
+@NoArgsConstructor
 public class Users {
 
     @Id
@@ -29,7 +30,7 @@ public class Users {
     private String password;
 
     @NonNull
-    @Pattern(regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]{1,12}+@[a-zA-Z0-9.-]+\\.[A-Za-z]{2,3}$",message = "Email should start and should consist 1,12 alpha-numeric characters(Can also Contain special characters) have @ in between and should end with domain")
+    @Pattern(regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]{1,51}+@[a-zA-Z0-9.-]+\\.[A-Za-z]{2,3}$",message = "Email should start and should consist 1,12 alpha-numeric characters(Can also Contain special characters) have @ in between and should end with domain")
     private String mail;
 
     @NonNull

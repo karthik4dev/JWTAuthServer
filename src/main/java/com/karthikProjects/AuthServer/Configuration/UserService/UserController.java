@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class UserController {
 
     @Autowired
-    private UserRepository userRepository;
-    @PostMapping(value = "/saveuser",consumes = "Application/JSON")
+    private UserService userService;
+    @PostMapping(value = "/saveuser",consumes = "application/json")
     void CreateUsers(@RequestBody Users users){
-        userRepository.save(users);
+        userService.save(users);
     }
 }
