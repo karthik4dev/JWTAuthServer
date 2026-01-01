@@ -22,6 +22,7 @@ public class Users {
     private long id;
 
     @NonNull
+    @Column(unique = true,columnDefinition = "User name for authorization")
     private String username;
 
     @NonNull
