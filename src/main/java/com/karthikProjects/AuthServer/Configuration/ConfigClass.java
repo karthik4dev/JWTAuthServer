@@ -70,6 +70,7 @@ public class ConfigClass {
                 OAuth2AuthorizationServerConfigurer.authorizationServer();
 
         http
+                .csrf(AbstractHttpConfigurer::disable)
                 .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
                 .with(authorizationServerConfigurer, (authorizationServer) ->
                         authorizationServer
@@ -95,7 +96,8 @@ public class ConfigClass {
     @Order(2)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
             throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
+        http
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/saveuser").permitAll()
                         .anyRequest().authenticated()
