@@ -1,7 +1,7 @@
 package com.karthikProjects.AuthServer.Configuration;
 
-import com.karthikProjects.AuthServer.Configuration.UserService.Scopes;
-import com.karthikProjects.AuthServer.Configuration.UserService.UserService;
+import com.karthikProjects.AuthServer.Userfolder.Scopes;
+import com.karthikProjects.AuthServer.Userfolder.UserService;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;

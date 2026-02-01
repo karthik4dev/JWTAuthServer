@@ -1,11 +1,10 @@
-package com.karthikProjects.AuthServer.Configuration.UserService;
+package com.karthikProjects.AuthServer.Userfolder;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 @AllArgsConstructor

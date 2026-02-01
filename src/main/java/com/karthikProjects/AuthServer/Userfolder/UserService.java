@@ -1,6 +1,7 @@
-package com.karthikProjects.AuthServer.Configuration.UserService;
+package com.karthikProjects.AuthServer.Userfolder;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,6 +12,7 @@ import java.util.Optional;
 
 import static com.karthikProjects.AuthServer.Configuration.ConfigClass.passwordEncoder;
 
+@Primary
 @Service
 public class UserService implements UserDetailsService {
 

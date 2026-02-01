@@ -1,4 +1,4 @@
-package com.karthikProjects.AuthServer.Configuration.UserService;
+package com.karthikProjects.AuthServer.Userfolder;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,9 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     @Autowired
-    private UserService userService;
-    @PostMapping(value = "/saveuser",consumes = "application/json")
-    void CreateUsers(@RequestBody Users users){
+    UserService userService;
+
+    @PostMapping(value = "/saveuser", consumes = "application/json")
+    public void CreateUsers(@RequestBody Users users) {
         userService.save(users);
     }
 }

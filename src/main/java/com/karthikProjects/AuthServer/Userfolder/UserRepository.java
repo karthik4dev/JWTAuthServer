@@ -1,4 +1,4 @@
-package com.karthikProjects.AuthServer.Configuration.UserService;
+package com.karthikProjects.AuthServer.Userfolder;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
