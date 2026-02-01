@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21
+FROM eclipse-temurin:21.0.9_10-jre-ubi10-minimal
 RUN mkdir /opt/app
 WORKDIR /opt/app/.
 COPY ./build/libs/AuthServer-1.1.jar .
