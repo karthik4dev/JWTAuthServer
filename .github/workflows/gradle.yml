@@ -61,7 +61,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           
     - name: Build docker image from run command
-      run: docker build -t authserver --build-arg version=${{ steps.version.outputs.version }} .
+      run: docker build -t authserver --build-arg JAR_VERSION=${{ steps.version.outputs.version }} .
 
     - name: tag it with private repo
       run: docker tag authserver:latest ${{ secrets.DOCKER_USERNAME }}/authenticationserver:${{ steps.version.outputs.version }}
