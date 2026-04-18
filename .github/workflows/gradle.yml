@@ -45,7 +45,7 @@ jobs:
 
     - name: Get version number from Gradle
       run: |
-        sed -n '8p' build.gradle | sed "s/: /=/g" >> "$GITHUB_OUTPUT"
+        sed -n '8p' build.gradle | sed "s/: /=/g" >> "$GITHUB_OUTPUT" && cat "$GITHUB_OUTPUT"
       id: version
 
     - name: Get Artifact
