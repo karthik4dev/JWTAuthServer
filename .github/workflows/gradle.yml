@@ -44,7 +44,8 @@ jobs:
       run: ./gradlew build -x test
 
     - name: Get version number from Gradle
-      run: chmod 777 getVersion.sh && ./getVersion.sh > ${{ github.output }}
+      run: |
+        sed -n '8p' build.gradle | sed "s/: /=/g"> ${{ github.output }}
       id: version
 
     - name: Get Artifact

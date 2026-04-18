@@ -1,1 +1,0 @@
-sed -n '8p' build.gradle | sed "s/: /=/g"
