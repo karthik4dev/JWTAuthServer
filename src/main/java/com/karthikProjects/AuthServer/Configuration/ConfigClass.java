@@ -15,12 +15,12 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authorization.EnableMultiFactorAuthentication;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
-import org.springframework.security.core.userdetails.UserDetailsPasswordService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -46,6 +46,7 @@ import java.util.UUID;
 
 @Configuration
 @EnableWebSecurity
+//@EnableMultiFactorAuthentication(authorities = ("ROLE_ADMIN"))
 public class ConfigClass {
 
     @Autowired
@@ -55,10 +56,10 @@ public class ConfigClass {
     public static PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     AuthenticationProvider authenticationProvider(){
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userService);
-        provider.setUserDetailsPasswordService((UserDetailsPasswordService) userService);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
@@ -66,15 +67,15 @@ public class ConfigClass {
     @Bean
     public org.springframework.security.authentication.AuthenticationManager authenticationManager(AuthenticationConfiguration config) {
         try{
-        return config.getAuthenticationManager();}
+            return config.getAuthenticationManager();}
         catch(Exception e){
-        throw new RuntimeException("Error occurred while retrieving AuthenticationManager from AuthenticationConfiguration");}
+            throw new RuntimeException("Error occurred while retrieving AuthenticationManager from AuthenticationConfiguration");}
     }
 
     @Bean
     @Order(1)
-    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http){
-            try{OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
+    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) {
+        try{OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
                 new OAuth2AuthorizationServerConfigurer();
 
         http
@@ -95,26 +96,25 @@ public class ConfigClass {
                         )
                 );
 
-        return http.build();}
-            catch (Exception e){throw new RuntimeException("Error occurred while building authorization server security filter chain", e);}
+        return http.build();} catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Bean
     @Order(2)
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http){
-        try{
-        http
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)  {
+        try{http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/saveuser").permitAll()
                         .anyRequest().authenticated()
                 )
-                // Form login handles the redirect to the login page from the
-                // authorization server filter chain;
                 .formLogin(Customizer.withDefaults());
 
-        return http.build();}
-    catch (Exception e){throw new RuntimeException("Error occurred while building default security filter chain", e);}
+        return http.build();} catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
