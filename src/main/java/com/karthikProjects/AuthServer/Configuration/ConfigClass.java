@@ -17,7 +17,9 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -26,14 +28,13 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
-import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
-import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -41,8 +42,6 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Duration;
 import java.util.UUID;
-
-
 
 @Configuration
 @EnableWebSecurity
@@ -55,33 +54,40 @@ public class ConfigClass {
     public static PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     AuthenticationProvider authenticationProvider(){
-        DaoAuthenticationProvider provider= new DaoAuthenticationProvider(userService);
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userService);
+//        provider.setUserDetailsService();
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
 
     @Bean
+    public org.springframework.security.authentication.AuthenticationManager authenticationManager(AuthenticationConfiguration config) {
+        try{
+            return config.getAuthenticationManager();}
+        catch(Exception e){
+            throw new RuntimeException("Error occurred while retrieving AuthenticationManager from AuthenticationConfiguration");}
+    }
+
+    @Bean
     @Order(1)
-    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
-            throws Exception {
+    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
-                OAuth2AuthorizationServerConfigurer.authorizationServer();
+                new OAuth2AuthorizationServerConfigurer();
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
                 .with(authorizationServerConfigurer, (authorizationServer) ->
                         authorizationServer
-                                .oidc(Customizer.withDefaults())	// Enable OpenID Connect 1.0
+                                .oidc(Customizer.withDefaults())
                 )
                 .authorizeHttpRequests((authorize) ->
                         authorize.requestMatchers("/saveuser").permitAll()
                                 .anyRequest().authenticated()
                 )
-                // Redirect to the login page when not authenticated from the
-                // authorization endpoint
                 .exceptionHandling((exceptions) -> exceptions
                         .defaultAuthenticationEntryPointFor(
                                 new LoginUrlAuthenticationEntryPoint("/login"),
@@ -94,16 +100,13 @@ public class ConfigClass {
 
     @Bean
     @Order(2)
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
-            throws Exception {
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/saveuser").permitAll()
                         .anyRequest().authenticated()
                 )
-                // Form login handles the redirect to the login page from the
-                // authorization server filter chain;
                 .formLogin(Customizer.withDefaults());
 
         return http.build();
@@ -115,7 +118,9 @@ public class ConfigClass {
         RegisteredClient client1 = RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId("client1")
                 .clientName("Karthik P N")
-                .clientSecret(passwordEncoder().encode("secret")).scope(String.valueOf(Scopes.READ))
+                .clientSecret(passwordEncoder().encode("secret"))
+                .scope(Scopes.READ.name())
+                .scope(Scopes.ADMIN.name())
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)

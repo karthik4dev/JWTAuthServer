@@ -1,11 +1,11 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.5.13'
+	id 'org.springframework.boot' version '4.0.6'
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'com.karthikProjects'
-version = '1.4'
+version = '2.1'
 
 java {
 	toolchain {
@@ -15,7 +15,6 @@ java {
 
 repositories {
 	mavenCentral()
-	maven { url = 'https://repo.spring.io/snapshot' }
 }
 
 dependencies {
@@ -25,14 +24,17 @@ dependencies {
 	runtimeOnly 'com.oracle.database.jdbc:ojdbc11'
 	annotationProcessor 'org.projectlombok:lombok'
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-    implementation('org.springframework.boot:spring-boot-starter-validation')
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation "org.springframework.boot:spring-boot-starter-oauth2-authorization-server"
+//	implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-authorization-server:1.5.7'
+//	implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-authorization-server'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 	implementation 'org.springframework.security:spring-security-oauth2-jose'
-	compileOnly 'org.projectlombok:lombok:1.18.36'
+	//Migrator for Springboot4
+	runtimeOnly 'org.springframework.boot:spring-boot-properties-migrator'
 
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test-classic'
 	testImplementation 'org.mockito:mockito-core'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
