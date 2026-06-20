@@ -39,12 +39,21 @@ public class UserService implements UserDetailsService {
     }
 
     public void save(Users users) {
-        Users user = Users.builder()
-                .username(users.getUsername())
-                .mail(users.getMail())
-                .roles(users.getRoles())
-                .password(Objects.requireNonNull(passwordEncoder().encode(users.getPassword())))
-                .build();
-        repository.save(user);
+        try {
+            if (loadUserByUsername(users.getUsername()).getUsername().isEmpty()) {
+                Users user = Users.builder()
+                        .username(users.getUsername())
+                        .mail(users.getMail())
+                        .roles(users.getRoles())
+                        .password(Objects.requireNonNull(passwordEncoder().encode(users.getPassword())))
+                        .build();
+                repository.save(user);
+            }
+        }
+        catch (Exception e) {
+            System.err.println(e.getMessage());
+            e.fillInStackTrace();
+        }
+
     }
 }

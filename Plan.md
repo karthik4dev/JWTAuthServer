@@ -2,7 +2,7 @@
 
 This document is a pragmatic, step-by-step implementation and test plan tailored to this repository (Java 21, Spring Boot 4.0.6, Authorization Server + JPA). Keep changes small and reversible. Follow the checklist, then the step details and test cases.
 
-**Project Version**: 2.1 | **Last Updated**: June 19, 2026
+**Project Version**: 2.1 | **Last Updated**: June 20, 2026
 
 ---
 
@@ -1122,4 +1122,4 @@ implementation 'com.google.zxing:javase:3.5.3'
 
 ---
 
-**Document Status**: ✓ Complete | **Last Updated**: June 19, 2026 | **Version**: 2.1
+**Document Status**: ✓ Complete | **Last Updated**: June 20, 2026 | **Version**: 2.1
