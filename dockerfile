@@ -1,4 +1,4 @@
-FROM dhi.io/amazoncorretto:21-alpine3.23
+FROM ubuntu/jdk:21-24.04_stable
 RUN mkdir /opt/app
 WORKDIR /opt/app/.
 ARG JAR_VERSION=1.2
