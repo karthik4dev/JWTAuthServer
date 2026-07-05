@@ -21,7 +21,7 @@ public class Users {
     private long id;
 
     @NonNull
-    @Column(unique = true,columnDefinition = "User name for authorization")
+    @Column(unique = true)
     private String username;
 
     @NonNull

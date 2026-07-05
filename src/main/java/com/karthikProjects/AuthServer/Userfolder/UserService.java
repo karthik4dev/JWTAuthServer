@@ -38,13 +38,24 @@ public class UserService implements UserDetailsService {
                 .build();
     }
 
-    public void save(Users users) {
-        Users user = Users.builder()
-                .username(users.getUsername())
-                .mail(users.getMail())
-                .roles(users.getRoles())
-                .password(Objects.requireNonNull(passwordEncoder().encode(users.getPassword())))
-                .build();
-        repository.save(user);
+    public boolean save(Users users) {
+        try {
+            // Only save if a user with the given username does not already exist
+            if (repository.findByUsername(users.getUsername()).isPresent()) {
+                return false;
+            }
+            Users user = Users.builder()
+                    .username(users.getUsername())
+                    .mail(users.getMail())
+                    .roles(users.getRoles())
+                    .password(Objects.requireNonNull(passwordEncoder().encode(users.getPassword())))
+                    .build();
+            repository.save(user);
+            return true;
+        } catch (Exception e) {
+            // rethrow as runtime to surface problems in tests instead of silently swallowing
+            throw new RuntimeException(e);
+        }
+
     }
 }

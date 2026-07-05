@@ -14,12 +14,15 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authorization.AuthorizationManagerFactories;
+import org.springframework.security.authorization.AuthorizationManagerFactory;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
+import org.springframework.security.core.authority.FactorGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -45,6 +48,7 @@ import java.util.UUID;
 
 @Configuration
 @EnableWebSecurity
+//@EnableMultiFactorAuthentication(authorities = ("ROLE_ADMIN"))
 public class ConfigClass {
 
     @Autowired
@@ -58,7 +62,6 @@ public class ConfigClass {
     @Bean
     AuthenticationProvider authenticationProvider(){
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userService);
-//        provider.setUserDetailsService();
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
@@ -73,8 +76,8 @@ public class ConfigClass {
 
     @Bean
     @Order(1)
-    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
-        OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
+    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) {
+        try{OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
                 new OAuth2AuthorizationServerConfigurer();
 
         http
@@ -95,21 +98,31 @@ public class ConfigClass {
                         )
                 );
 
-        return http.build();
+        return http.build();} catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Bean
     @Order(2)
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)  {
+        try{
+            AuthorizationManagerFactory<Object> mfa = AuthorizationManagerFactories.multiFactor()
+                    .requireFactors(
+                            FactorGrantedAuthority.PASSWORD_AUTHORITY,
+                            FactorGrantedAuthority.X509_AUTHORITY).build();
+            http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/saveuser").permitAll()
                         .anyRequest().authenticated()
                 )
-                .formLogin(Customizer.withDefaults());
+                .formLogin(Customizer.withDefaults())
+                    .oneTimeTokenLogin(Customizer.withDefaults());
 
-        return http.build();
+        return http.build();} catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
