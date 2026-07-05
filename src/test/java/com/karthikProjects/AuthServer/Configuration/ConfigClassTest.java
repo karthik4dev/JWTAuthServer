@@ -54,7 +54,7 @@ public class ConfigClassTest {
     @Test
     public void testJwkSourceAndJwtDecoder_notNull() {
         ConfigClass config = new ConfigClass();
-        JWKSource jwkSource = config.jwkSource();
+        JWKSource<SecurityContext> jwkSource = config.jwkSource();
         assertNotNull(jwkSource, "jwkSource must not be null");
         JwtDecoder decoder = config.jwtDecoder(jwkSource);
         assertNotNull(decoder, "jwtDecoder must not be null");

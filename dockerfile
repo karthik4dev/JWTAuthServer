@@ -1,4 +1,4 @@
-FROM ubuntu/jdk:21-24.04_stable
+FROM eclipse-temurin:latest
 RUN mkdir /opt/app
 WORKDIR /opt/app/.
 ARG JAR_VERSION=1.2
