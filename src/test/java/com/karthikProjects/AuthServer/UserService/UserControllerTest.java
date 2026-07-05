@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 
+@org.springframework.test.context.ActiveProfiles("test")
 @SpringBootTest
 class UserControllerTest {
     @Autowired
