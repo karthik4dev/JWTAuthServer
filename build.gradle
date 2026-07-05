@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.karthikProjects'
-version = '2.1'
+version = '2.2'
 
 java {
 	toolchain {
@@ -28,9 +28,8 @@ dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-oauth2-authorization-server"
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation 'org.springframework.security:spring-security-oauth2-jose'
-	//Migrator for Springboot4
-	runtimeOnly 'org.springframework.boot:spring-boot-properties-migrator'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test-classic'
 	testImplementation 'org.mockito:mockito-core'
