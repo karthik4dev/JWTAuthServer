@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21.0.9_10-jre-ubi10-minimal
+FROM dhi.io/amazoncorretto:21-alpine3.23
 RUN mkdir /opt/app
 WORKDIR /opt/app/.
 ARG JAR_VERSION=1.2

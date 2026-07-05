@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.karthikProjects'
-version = '2.2'
+version = '2.2.1'
 
 java {
 	toolchain {
