@@ -38,7 +38,15 @@ A **JWT (JSON Web Token) authorization server** is crucial when you need to mana
 In essence, the JWT authorization server provides the ability to handle **secure authentication, manage roles and permissions**, and **scale easily** across multiple services, all while maintaining a **stateless** architecture that simplifies operations. It’s highly useful in modern, distributed, and microservices-based applications.
 
 ## How to run this Jar ##
- Simply run the java -jar "Jar name" which you have built
+ Simply run the java -jar "Jar name" which you have built.
+ If to be run with Docker, use the following command:
+  ```docker run -d \ ```
+  ```   --name authserver \ ```
+  ```   -p 9000:9000 \   ```
+  ```   -e SPRING_DATASOURCE_URL="jdbc:oracle:thin:@host.docker.internal:1521/xepdb1" \ ```
+  ```   -e SPRING_DATASOURCE_USERNAME="<DB_USER>" \  ```
+  ```   -e SPRING_DATASOURCE_PASSWORD="<DB_PASSWORD>" \ ```
+ ```    authserver:latest ```
 
 ## chnges to be done in upcoming editions ##
 1. Run it with OpenJDK :white_check_mark:
