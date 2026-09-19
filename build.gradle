@@ -4,7 +4,6 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
-
 group = 'com.karthikProjects'
 version = '2.3'
 
@@ -41,20 +40,4 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
-}
-
-tasks.named('bootJar') {
-	// produce a single executable jar named with the application name only (no version)
-	archiveBaseName.set(project.name)
-	archiveVersion.set('')
-	manifest {
-		attributes(
-			'Implementation-Title': project.name,
-			'Main-Class': 'com.karthikProjects.AuthServer.AuthServerApplication'
-		)
-	}
-}
-
-tasks.named('jar') {
-	enabled = false
 }
