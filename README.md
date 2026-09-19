@@ -48,7 +48,7 @@ In essence, the JWT authorization server provides the ability to handle **secure
   ```   -e SPRING_DATASOURCE_PASSWORD="<DB_PASSWORD>" \ ```
  ```    authserver:latest ```
 
-## chnges to be done in upcoming editions ##
+## changes to be done in upcoming editions ##
 1. Run it with OpenJDK :white_check_mark:
 2. Run it with Docker :white_check_mark:
 3. Enable Basic Logging for the JWT Resource server for better monitoring :white_check_mark:
