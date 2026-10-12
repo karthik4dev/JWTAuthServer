@@ -46,6 +46,10 @@ In essence, the JWT authorization server provides the ability to handle **secure
   ```   -e SPRING_DATASOURCE_URL="jdbc:oracle:thin:@host.docker.internal:1521/xepdb1" \ ```
   ```   -e SPRING_DATASOURCE_USERNAME="<DB_USER>" \  ```
   ```   -e SPRING_DATASOURCE_PASSWORD="<DB_PASSWORD>" \ ```
+  ```   -e SPRING_MAIL_USERNAME="<EMAIL ID>" \```
+  ```   -e SPRING_MAIL_PASSWORD="<MAIL PASSWORD>" \``` 
+  ```   -e SPRING_MAIL_HOST=MAIL HOST[Please google if you don't know. Eg: gmail-smtp.gmail.com] \```
+  ```   -e spring.mail.port=MAIL PORT[Please google if you don't know. Eg: gmail:587] \```
  ```    authserver:latest ```
 
 ## changes to be done in upcoming editions ##
