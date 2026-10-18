@@ -7,11 +7,16 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import org.osgi.resource.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.authorization.AuthorizationManagerFactories;
@@ -29,6 +34,7 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
+import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
@@ -39,6 +45,7 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 
+import javax.sql.DataSource;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
@@ -55,12 +62,12 @@ public class ConfigClass {
     public UserService userService;
 
     @Bean
-    public static PasswordEncoder passwordEncoder(){
+    public static PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    AuthenticationProvider authenticationProvider(){
+    AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userService);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
@@ -68,66 +75,71 @@ public class ConfigClass {
 
     @Bean
     public org.springframework.security.authentication.AuthenticationManager authenticationManager(AuthenticationConfiguration config) {
-        try{
-            return config.getAuthenticationManager();}
-        catch(Exception e){
-            throw new RuntimeException("Error occurred while retrieving AuthenticationManager from AuthenticationConfiguration");}
+        try {
+            return config.getAuthenticationManager();
+        } catch (Exception e) {
+            throw new RuntimeException("Error occurred while retrieving AuthenticationManager from AuthenticationConfiguration");
+        }
     }
 
     @Bean
     @Order(1)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) {
-        try{OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
-                new OAuth2AuthorizationServerConfigurer();
+        try {
+            OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
+                    new OAuth2AuthorizationServerConfigurer();
 
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
-                .with(authorizationServerConfigurer, (authorizationServer) ->
-                        authorizationServer
-                                .oidc(Customizer.withDefaults())
-                )
-                .authorizeHttpRequests((authorize) ->
-                        authorize.requestMatchers("/saveuser").permitAll()
-                                .anyRequest().authenticated()
-                )
-                .exceptionHandling((exceptions) -> exceptions
-                        .defaultAuthenticationEntryPointFor(
-                                new LoginUrlAuthenticationEntryPoint("/login"),
-                                new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
-                        )
-                );
+            http
+                    .csrf(AbstractHttpConfigurer::disable)
+                    .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
+                    .with(authorizationServerConfigurer, (authorizationServer) ->
+                            authorizationServer
+                                    .oidc(Customizer.withDefaults())
+                    )
+                    .authorizeHttpRequests((authorize) ->
+                            authorize.requestMatchers("/saveuser").permitAll()
+                                    .anyRequest().authenticated()
+                    )
+                    .exceptionHandling((exceptions) -> exceptions
+                            .defaultAuthenticationEntryPointFor(
+                                    new LoginUrlAuthenticationEntryPoint("/login"),
+                                    new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
+                            )
+                    );
 
-        return http.build();} catch (Exception e) {
+            return http.build();
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Bean
     @Order(2)
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)  {
-        try{
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) {
+        try {
             AuthorizationManagerFactory<Object> mfa = AuthorizationManagerFactories.multiFactor()
                     .requireFactors(
                             FactorGrantedAuthority.PASSWORD_AUTHORITY,
                             FactorGrantedAuthority.X509_AUTHORITY).build();
             http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/saveuser").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .formLogin(Customizer.withDefaults())
+                    .csrf(AbstractHttpConfigurer::disable)
+                    .authorizeHttpRequests((authorize) -> authorize
+                            .requestMatchers("/saveuser").permitAll()
+                            .anyRequest().authenticated()
+                    )
+                    .formLogin(Customizer.withDefaults())
                     .oneTimeTokenLogin(Customizer.withDefaults());
 
-        return http.build();} catch (RuntimeException e) {
+            return http.build();
+        } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }
     }
 
 
     @Bean
-    public RegisteredClientRepository registeredClientRepository() {
+    public RegisteredClientRepository registeredClientRepository(JdbcTemplate jdbcTemplate) {
+        JdbcRegisteredClientRepository jdbcRegisteredClientRepository;
         RegisteredClient client1 = RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId("client1")
                 .clientName("Karthik P N")
@@ -142,8 +154,16 @@ public class ConfigClass {
                 .tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofHours(24)).build())
                 .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
                 .build();
+        try {
+            jdbcRegisteredClientRepository = new JdbcRegisteredClientRepository(jdbcTemplate);
+            if(jdbcRegisteredClientRepository.findByClientId("client1") == null) {
+                jdbcRegisteredClientRepository.save(client1);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot save registered client", e);
+        }
 
-        return new InMemoryRegisteredClientRepository(client1);
+        return jdbcRegisteredClientRepository;
     }
 
     @Bean
@@ -165,8 +185,7 @@ public class ConfigClass {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
             keyPairGenerator.initialize(2048);
             keyPair = keyPairGenerator.generateKeyPair();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw new IllegalStateException(ex);
         }
         return keyPair;
@@ -181,5 +200,4 @@ public class ConfigClass {
     public AuthorizationServerSettings authorizationServerSettings() {
         return AuthorizationServerSettings.builder().build();
     }
-
 }
