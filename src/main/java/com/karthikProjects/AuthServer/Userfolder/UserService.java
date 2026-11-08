@@ -1,6 +1,7 @@
 package com.karthikProjects.AuthServer.Userfolder;
 
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,11 +24,15 @@ public class UserService implements UserDetailsService {
     @Autowired
     UserRepository repository;
 
+    @SneakyThrows
     @Override
     public @NonNull UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
         Optional<Users> user = repository.findByUsername(username);
         if (user.isEmpty()) {
             throw new UsernameNotFoundException("Given Username is not found in DB");
+        }
+        if (user.get().getRoles().isEmpty() || user.get().getRoles().stream().anyMatch(role -> role.name().isEmpty()) || (!user.get().getRoles().contains(Scopes.ADMIN) && !user.get().getRoles().contains(Scopes.READ))) {
+            throw new RoleNotFound("User has no roles assigned or has roles with empty names");
         }
         return User.builder()
                 .username(user.get().getUsername())

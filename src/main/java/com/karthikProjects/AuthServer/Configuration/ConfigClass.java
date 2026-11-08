@@ -2,6 +2,7 @@ package com.karthikProjects.AuthServer.Configuration;
 
 import com.karthikProjects.AuthServer.Userfolder.Scopes;
 import com.karthikProjects.AuthServer.Userfolder.UserService;
+import com.karthikProjects.AuthServer.Userfolder.Users;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
@@ -10,6 +11,7 @@ import com.nimbusds.jose.proc.SecurityContext;
 import org.osgi.resource.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -33,6 +35,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
+import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
@@ -46,11 +50,14 @@ import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 
 import javax.sql.DataSource;
+import java.beans.ConstructorProperties;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Configuration
@@ -65,6 +72,10 @@ public class ConfigClass {
     public static PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    @Autowired
+    private static DBProperties properties;
+
 
     @Bean
     AuthenticationProvider authenticationProvider() {
@@ -139,31 +150,13 @@ public class ConfigClass {
 
     @Bean
     public RegisteredClientRepository registeredClientRepository(JdbcTemplate jdbcTemplate) {
-        JdbcRegisteredClientRepository jdbcRegisteredClientRepository;
-        RegisteredClient client1 = RegisteredClient.withId(UUID.randomUUID().toString())
-                .clientId("client1")
-                .clientName("Karthik P N")
-                .clientSecret(passwordEncoder().encode("secret"))
-                .scope(Scopes.READ.name())
-                .scope(Scopes.ADMIN.name())
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-                .redirectUri("http://127.0.0.1:8080/login/oauth2/code/oidc-client")
-                .postLogoutRedirectUri("http://127.0.0.1:8080/")
-                .tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofHours(24)).build())
-                .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
-                .build();
-        try {
-            jdbcRegisteredClientRepository = new JdbcRegisteredClientRepository(jdbcTemplate);
-            if(jdbcRegisteredClientRepository.findByClientId("client1") == null) {
-                jdbcRegisteredClientRepository.save(client1);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Cannot save registered client", e);
-        }
-
+        JdbcRegisteredClientRepository jdbcRegisteredClientRepository= new JdbcRegisteredClientRepository(jdbcTemplate);
         return jdbcRegisteredClientRepository;
+    }
+
+    @Bean
+    OAuth2AuthorizationService authorizationService(JdbcTemplate jdbcTemplate, RegisteredClientRepository registeredClientRepository) {
+        return new JdbcOAuth2AuthorizationService(jdbcTemplate, registeredClientRepository);
     }
 
     @Bean

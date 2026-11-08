@@ -13,6 +13,7 @@ public class UserController {
 
     @PostMapping(value = "/saveuser", consumes = "application/json")
     public void CreateUsers(@RequestBody Users users) {
-        userService.save(users);
+        userService.save(users)
+        ;
     }
 }

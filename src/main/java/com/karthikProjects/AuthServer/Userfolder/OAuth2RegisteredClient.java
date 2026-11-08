@@ -1,6 +1,7 @@
 package com.karthikProjects.AuthServer.Userfolder;
 
 import jakarta.persistence.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -15,7 +16,8 @@ public class OAuth2RegisteredClient {
     @Column(name = "client_secret")
     String clientSecret;
     @Column(name = "client_secret_expires_at")
-    String ClientSecretExpiresAt;
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+    Date ClientSecretExpiresAt;
     @Column(name = "client_name")
     String clientName;
     @Column(name = "client_authentication_methods")
@@ -33,7 +35,6 @@ public class OAuth2RegisteredClient {
     @Column(name = "token_settings",length =  2048)
     String tokenSettings;
     @Column(name = "client_id_issued_at")
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     Date clientIdIssuedAt;
-
-
 }
