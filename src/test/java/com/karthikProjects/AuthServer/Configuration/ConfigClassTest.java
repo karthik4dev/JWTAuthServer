@@ -15,7 +15,9 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Date;
 import java.util.UUID;
+import org.h2.jdbcx.JdbcDataSource;
 import org.junit.jupiter.api.Test;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
@@ -36,17 +38,19 @@ public class ConfigClassTest {
     @Test
     public void testRegisteredClientRepository_containsClientAndScopes() {
         ConfigClass config = new ConfigClass();
-        RegisteredClientRepository repo = config.registeredClientRepository();
-        // InMemoryRegisteredClientRepository provides findByClientId(String)
+        JdbcDataSource dataSource = new JdbcDataSource();
+        dataSource.setURL("jdbc:h2:mem:authserver-test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1");
+        dataSource.setUser("sa");
+        dataSource.setPassword("");
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+
+        RegisteredClientRepository repo = config.registeredClientRepository(jdbcTemplate);
         try {
-            var client = (org.springframework.security.oauth2.server.authorization.client.RegisteredClient)
-                    repo.findByClientId("client1");
+            var client = repo.findByClientId("client1");
             assertNotNull(client, "Registered client 'client1' should exist");
             assertTrue(client.getScopes().contains("READ"), "Scopes should contain READ");
             assertTrue(client.getScopes().contains("ADMIN"), "Scopes should contain ADMIN");
         } catch (NoSuchMethodError | AbstractMethodError e) {
-            // Some RegisteredClientRepository implementations expose different APIs;
-            // fall back to ensuring the repository itself was created.
             assertNotNull(repo);
         }
     }
